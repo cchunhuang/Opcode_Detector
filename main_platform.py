@@ -10,28 +10,22 @@ from utils import write_output
 
 
 def Extraction(filename):
-    try:
-        # OpenFile
-        r2 = r2pipe.open(filename)
-        # Analyze  
-        r2.cmd('aaaa')
-        # Extraction
-        OpcodeSequence=[]
-        DisassembleJ=r2.cmdj('pdj $s')
-        if DisassembleJ:
-            for instruction in DisassembleJ:
-                try:
-                    if instruction['opcode'].split(' ')[0]:
-                        if instruction['opcode'].split(' ')[0] != "invalid":
-                            OpcodeSequence.append(instruction['opcode'].split(' ')[0])
-                except Exception as e:
-                    print(f"Error processing instruction: {instruction}, error: {e}")
-        else:
-            print("DisassembleJ is empty or None.")
-        return OpcodeSequence
-    except Exception as e:
-        print(f"Error in Extraction function: {e}")
-        return []
+    # OpenFile
+    r2 = r2pipe.open(filename)
+    # Analyze  
+    r2.cmd('aaaa')
+    # Extraction
+    OpcodeSequence=[]
+    DisassembleJ=r2.cmdj('pdj $s')
+    if DisassembleJ:
+        for instruction in DisassembleJ:
+            try:
+                if instruction['opcode'].split(' ')[0]:
+                    if instruction['opcode'].split(' ')[0] != "invalid":
+                        OpcodeSequence.append(instruction['opcode'].split(' ')[0])
+            except:
+                pass
+    return OpcodeSequence
 
 def vectorize(sequence):
     seq = ''
@@ -54,35 +48,33 @@ def vectorize(sequence):
     return(tmp)
     
     
-def Predict(X,clf):
+def Predict(X, clf):
     '''
     param: X (feature vector)
     return: y (label), 1 for benign, 0 for malware
     '''
-
     model = jb.load('./MD_Model/' + clf)
-    # label = model.predict_proba(X)
-    # return label
-    result = model.predict_proba(X).tolist()[0]
+    if hasattr(model, 'predict_proba'):
+        result = model.predict_proba(X).tolist()[0]
+    else:
+        result = model.predict(X).tolist()
     return result    
 
-def Predict_classification(X,clf):
+def Predict_classification(X, clf):
     '''
     param: X (feature vector)
     return: y (label)
     '''
-    #model = pickle.load('./FC_Model/SVM.pickle')
     model = jb.load('./FC_Model/' + clf)
-    # label = model.predict_proba(X)
-    # return label
-    result = model.predict_proba(X).tolist()[0]
+    if hasattr(model, 'predict_proba'):
+        result = model.predict_proba(X).tolist()[0]
+    else:
+        result = model.predict(X).tolist()
     return result
 
 def main(args):
     result = [-1]
     
-    # table = {0:'Mirai',1:'Bashlite',2:'Unknown',3:'Android',4:'Tsunami',5:'Hajime',6:'Dofloo',7:'Xorddos',8:'Pnscan',9:'BenignWare'}
-    # table_1 = {0:'Malware',1:'Benignware'}
     labels = ['Malware','Benignware']
     if args.classify:
         labels = ['Mirai','Bashlite','Unknown','Android','Tsunami','Hajime','Dofloo','Xorddos','Pnscan','BenignWare']
@@ -104,18 +96,12 @@ def main(args):
 
 
     if(args.classify == False):
-        result = Predict(feature,args.model)
-        # result = int(result[0])
-        # print(table_1[result])
-        # return table_1[result]
+        result = Predict(feature, args.model)
         print(result)
         write_output(args.input_path, args.output_path, result, labels)
         return result
     if(args.classify == True):
-        result = Predict_classification(feature,args.model)
-        # result = int(result[0])
-        # print(table[result])
-        # return table[result]
+        result = Predict_classification(feature, args.model)
         print(result)
         write_output(args.input_path, args.output_path, result, labels)  
         return result
