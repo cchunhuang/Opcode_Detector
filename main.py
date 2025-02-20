@@ -5,8 +5,10 @@ from sklearn import svm
 from sklearn.feature_extraction.text import CountVectorizer
 import r2pipe
 import joblib as jb
-from utils import parameter_parser
+
+from utils import load_json
 from utils import write_output
+from utils import parameter_parser
 
 
 def Extraction(filename):
@@ -48,35 +50,33 @@ def vectorize(sequence):
     return(tmp)
     
     
-def Predict(X,clf):
+def Predict(X, clf):
     '''
     param: X (feature vector)
     return: y (label), 1 for benign, 0 for malware
     '''
-
     model = jb.load('./MD_Model/' + clf)
-    # label = model.predict_proba(X)
-    # return label
-    result = model.predict_proba(X).tolist()[0]
+    if hasattr(model, 'predict_proba'):
+        result = model.predict_proba(X).tolist()[0]
+    else:
+        result = model.predict(X).tolist()
     return result    
 
-def Predict_classification(X,clf):
+def Predict_classification(X, clf):
     '''
     param: X (feature vector)
     return: y (label)
     '''
-    #model = pickle.load('./FC_Model/SVM.pickle')
     model = jb.load('./FC_Model/' + clf)
-    # label = model.predict_proba(X)
-    # return label
-    result = model.predict_proba(X).tolist()[0]
+    if hasattr(model, 'predict_proba'):
+        result = model.predict_proba(X).tolist()[0]
+    else:
+        result = model.predict(X).tolist()
     return result
 
 def main(args):
     result = [-1]
     
-    # table = {0:'Mirai',1:'Bashlite',2:'Unknown',3:'Android',4:'Tsunami',5:'Hajime',6:'Dofloo',7:'Xorddos',8:'Pnscan',9:'BenignWare'}
-    # table_1 = {0:'Malware',1:'Benignware'}
     labels = ['Malware','Benignware']
     if args.classify:
         labels = ['Mirai','Bashlite','Unknown','Android','Tsunami','Hajime','Dofloo','Xorddos','Pnscan','BenignWare']
@@ -98,18 +98,12 @@ def main(args):
 
 
     if(args.classify == False):
-        result = Predict(feature,args.model)
-        # result = int(result[0])
-        # print(table_1[result])
-        # return table_1[result]
+        result = Predict(feature, args.model)
         print(result)
         write_output(args.input_path, args.output_path, result, labels)
         return result
     if(args.classify == True):
-        result = Predict_classification(feature,args.model)
-        # result = int(result[0])
-        # print(table[result])
-        # return table[result]
+        result = Predict_classification(feature, args.model)
         print(result)
         write_output(args.input_path, args.output_path, result, labels)  
         return result
@@ -117,4 +111,9 @@ def main(args):
 
 if __name__=='__main__':
     args = parameter_parser()
-    main(args)
+    data = load_json(args.config)
+    
+    config = data.config
+    for file in data.label:
+        config.input_path = file.filename
+        main(config)

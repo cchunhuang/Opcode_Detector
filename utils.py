@@ -1,34 +1,27 @@
-import argparse
 import os
+import json
+import argparse
+from types import SimpleNamespace
 
 def parameter_parser():
+    parser = argparse.ArgumentParser(description="Process a JSON file.")
+    parser.add_argument("config", type=str, help="Path to the JSON file")
+    return parser.parse_args()
+
+def load_json(path):
     '''
-    to get the param in cmd
-    return. args
-        args.input_path : str
-        args.output_path : str
-        args.classify : bool
-        args.model : str
+    param. path: str, path to the config file
+    return. config: dict, the content of the config file
     '''
-    # update the description with your detector name
-    parser = argparse.ArgumentParser(description="Run OpcodeDetector.")
-
-    parser.add_argument('-i', '--input-path', type=str, metavar='<path>',
-                        help='path to the binary file')
-
-    parser.add_argument('-o', '--output-path', type=str, metavar='<path>', 
-                        help='path to the output file')
-
-    # if '-c' in the cmd line then args.classify == True => user wanna do family classification
-    # default (-c not in the line) => args.classify == False => user wanna do malware detection
-    parser.add_argument('-c', '--classify', action='store_true',
-                        help='apply the family classifier')
-
-    parser.add_argument('-m', '--model', type=str, metavar='[SVM | xgboost ]', default='xgboost',
-                        help='model to predict')
-    
-    args = parser.parse_args()
-    return args
+    try:
+        with open(path, "r", encoding="utf-8") as file:
+            data = json.load(file, object_hook=lambda d: SimpleNamespace(**d))
+        print("JSON Data Loaded Successfully:")
+        return data
+    except FileNotFoundError:
+        print(f"Error: File '{path}' not found.")
+    except json.JSONDecodeError:
+        print(f"Error: File '{path}' is not a valid JSON file.")
 
 def write_output(input_path,output_path,result,labels):
     '''
