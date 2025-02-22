@@ -1,5 +1,0 @@
-joblib==1.1.0
-numpy==1.20.3
-r2pipe==1.7.4
-scikit_learn==0.24.2
-xgboost==1.7.1
