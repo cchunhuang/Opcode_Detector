@@ -1,0 +1,42 @@
+[
+    {
+        "name": "09af909e6c6d7a5023a47838cafb1858459660dc761c4395d78abd6b7b08641b",
+        "detection": "malware"
+    },
+    {
+        "name": "05eebf400d535dd9695468cc0857b73efd885f2470fda7181386cfd3b2c983b8",
+        "detection": "malware"
+    },
+    {
+        "name": "1c71e568dc1cb07abc57e4f14997bf39b34bb0e4ccee66b08c43a6135972db58",
+        "detection": "benignware"
+    },
+    {
+        "name": "0c163f49f90478667d619e4ba6816c2bc8e3347517509e3627913bc4240cca41",
+        "detection": "malware"
+    },
+    {
+        "name": "0fa5e8fd61b0dac74df63d754c53b540eb47ddbbf00ccf9e8f318b2a20a90061",
+        "detection": "benignware"
+    },
+    {
+        "name": "0a2064dd5e6709abd61fff22274e10f5811c47b5e1e830d08b60bd0833528029",
+        "detection": "benignware"
+    },
+    {
+        "name": "21bf552b405b081851ff7a1da405093c2959dfd4183c47015beb959706d73084",
+        "detection": "benignware"
+    },
+    {
+        "name": "011bdd7f646df73ac85e03c683fff99f20f47a751b4798245b29e1643487c9d8",
+        "detection": "benignware"
+    },
+    {
+        "name": "0b1f9f91220fe325a1bcaaa78081d3fcd6e65199144ad2ce188a8e9c47a4ed6a",
+        "detection": "benignware"
+    },
+    {
+        "name": "00e0bb973c69f6aa10f29bfeb809e05343f1c7741f429221b33312c8ab6741a8",
+        "detection": "malware"
+    }
+]
