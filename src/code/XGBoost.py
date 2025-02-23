@@ -8,7 +8,7 @@ from Logger import setup_logger  # Import a custom logger setup
 from Vectorize import Vectorize  # Import a vectorization function/class
 from Extraction import Extraction  # Import a data extraction function/class
 
-class XGBoostDetector:
+class XGBoost:
     '''
     XGBoost classifier for malware detection.
     This class handles data extraction, vectorization, training, and prediction using XGBoost.
@@ -167,7 +167,7 @@ if __name__ == "__main__":
     model_path = './xgboost_model.pkl'
     
     # Create an instance of the XGBoostDetector class
-    detector = XGBoostDetector(top_features_path=top_features_path)
+    detector = XGBoost(top_features_path=top_features_path)
     
     # Load a pre-trained model if available
     detector.load_model(model_path)
