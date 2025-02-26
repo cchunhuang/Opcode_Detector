@@ -167,11 +167,7 @@ if __name__ == "__main__":
     model_path = './xgboost_model.pkl'
     
     # Create an instance of the XGBoostDetector class
-<<<<<<< HEAD
     detector = XGBoost(top_features_path=top_features_path)
-=======
-    detector = XGBoostDetector(top_features_path=top_features_path)
->>>>>>> 06848280f603ed466aefda00a23034d801e4e7e8
     
     # Load a pre-trained model if available
     detector.load_model(model_path)
