@@ -4,9 +4,8 @@ import xgboost as xgb
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import precision_score, recall_score, accuracy_score
 
-from Logger import setup_logger  # Import a custom logger setup
-from Vectorize import Vectorize  # Import a vectorization function/class
-from Extraction import Extraction  # Import a data extraction function/class
+from Logger import setup_logger 
+from utils import Vectorize, Extraction  
 
 class XGBoost:
     '''
