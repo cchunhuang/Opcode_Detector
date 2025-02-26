@@ -53,7 +53,7 @@
 ## 配置說明
 
 ### `config`
-- SVM.py 允許只輸入 config 的內容，如：
+- 允許只輸入 config 的內容，如：
 ```json
 {
     "path": {
@@ -86,7 +86,7 @@
 
 ### `config.path`
 
-- `input_file`: 輸入文件的路徑，預設為 `null`，只有單獨輸入 `config` 時才會啟用。
+- `input_file`: 包含輸入文件路徑的檔案，預設為 `null`，只有單獨輸入 `config` 時才會啟用。
 - `output_file`: 預測結果的輸出文件路徑。
 - `input_model`: 預訓練模型的輸入路徑。
 - `output_model`: 訓練後模型的輸出路徑。
