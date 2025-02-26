@@ -3,7 +3,7 @@ import json
 import argparse
 
 from SVM import SVM
-# from XGBoost import XGBoost
+from XGBoost import XGBoost
 
 def main(args):
     with open(args.config_path) as f:
@@ -14,8 +14,8 @@ def main(args):
         
     if config["model"]["model_name"] == "SVM":
         model = SVM(args.config_path)
-    # elif model == "XGBoost":
-    #     model = XGBoost(config_path)
+    elif config["model"]["model_name"] == "XGBoost":
+        model = XGBoost(args.config_path)
     else:
         raise ValueError(f"Invalid model name: {config['model']['model_name']}")
     

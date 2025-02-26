@@ -91,7 +91,7 @@ class SVM():
         Returns:
         tuple: A tuple containing:
             - numpy array of vectorized features.
-            - numpy array of corresponding labels (1 for malware, 0 for benignware).
+            - numpy array of corresponding labels (0 for malware, 1 for benignware).
         '''
         if file_list is None:
             file_list = self.file_list.keys()
@@ -156,9 +156,6 @@ class SVM():
     def predict(self):
         '''
         Predicts whether the given files are malware or benignware.
-
-        Parameters:
-        file_list (list): List of file paths for prediction.
 
         Returns:
         list: A list of dictionaries containing the file name and detection result.

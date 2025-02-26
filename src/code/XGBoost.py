@@ -1,181 +1,181 @@
+import os
+import csv
+import json
 import numpy as np
 import joblib as jb
+from box import Box
 import xgboost as xgb
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import precision_score, recall_score, accuracy_score
 
-from Logger import setup_logger 
-from utils import Vectorize, Extraction  
+from Logger import setup_logger
+from utils import Vectorize, Extraction
 
-class XGBoost:
+class XGBoost():
     '''
     XGBoost classifier for malware detection.
     This class handles data extraction, vectorization, training, and prediction using XGBoost.
     '''
     
-    def __init__(self, n_estimators=100, max_depth=6, eta=0.3, test_size=0.3, random_state=42, eval_metric='logloss', top_features_path="./top_features_1.npy"):
+    def __init__(self, config_path="./config.json"):
         '''
-        Initializes the XGBoost classifier with hyperparameters.
+        Initializes the XGBoost classifier.
+        '''
+        # Read config.json
+        with open(config_path) as f:
+            self.config = Box(json.load(f))
+            
+        if hasattr(self.config, "config"):
+            self.file_list = {f["filename"]: f["label"] for f in self.config.label}
+            self.config = self.config.config
+        else:
+            self.file_list = {}
+            with open(self.config.path.input_file, mode='r') as file:
+                csv_reader = csv.DictReader(file)
+                for row in csv_reader:
+                    self.file_list[row['filename']] = row['label']
         
-        Parameters:
-        - n_estimators: Number of trees in the XGBoost model
-        - max_depth: Maximum depth of each tree
-        - eta: Learning rate
-        - test_size: Proportion of data used for testing
-        - random_state: Seed for reproducibility
-        - eval_metric: Evaluation metric used in training
-        - top_features_path: Path to the top features used for vectorization
-        '''
-        self.logger = setup_logger("XGBoost")  # Set up logging for debugging and tracking
+        # Create necessary directories
+        for folder_name, folder_path in self.config.folder.items():
+            os.makedirs(folder_path, exist_ok=True)
+        
+        # Set up logging system
+        self.logger = setup_logger(logger_name="XGBoost", logging_config_path=self.config.path.logging_config, output_log_path=self.config.path.log_file)
         self.logger.info("XGBoost model initialized")
         
-        # Initialize the XGBoost classifier with specified parameters
-        self.model = xgb.XGBClassifier(n_estimators=n_estimators, max_depth=max_depth, eta=eta, 
-                                       eval_metric=eval_metric, use_label_encoder=False)
+        # Initialize XGBoost model
+        self.xgboost = xgb.XGBClassifier(n_estimators=self.config.model.n_estimators, max_depth=self.config.model.max_depth, eta=self.config.model.learning_rate,
+                                       eval_metric=self.config.model.eval_metric, use_label_encoder=self.config.model.use_label_encoder)
         
-        # Store configuration parameters
-        self.test_size = test_size
-        self.random_state = random_state
-        self.top_features_path = top_features_path
+    def extractFeature(self, filename=None):
+        '''
+        Extracts features from the malware dataset.
+        
+        Parameters:
+        filename (str): Path to the file to extract features from (default: None, using file_list from config).
+
+        Returns:
+        list: A list of extracted features from the dataset(s).
+        '''
+        if filename is not None:
+            self.logger.info(f"Extracting features")
+            return Extraction(filename)
+        
+        self.logger.info(f"Extracting features from config file_list")
+        return [Extraction(f) for f in self.file_list.keys()]
     
-    def load_data(self, file_list):
+    def vectorize(self, sequence):
+        '''
+        Vectorizes the extracted features into a numpy array.
+        
+        Parameters:
+        sequence (list): List of extracted features.
+
+        Returns:
+        numpy array: Vectorized form of the extracted features.
+        '''
+        self.logger.info("Vectorizing extracted features")
+        return Vectorize(sequence, self.config.path.top_features)
+        
+    def load_data(self, file_list=None):
         '''
         Loads and processes data from a list of file paths.
         
         Parameters:
-        - file_list: List of file paths containing malware or benignware
-        
+        file_list (list): List of file paths to be used for training or prediction.(default: None, using file_list from config)
+
         Returns:
-        - vectorized_samples: Feature matrix for classification
-        - labels: Corresponding labels (1 for malware, 0 for benignware)
+        tuple: A tuple containing:
+            - numpy array of vectorized features.
+            - numpy array of corresponding labels (0 for malware, 1 for benignware).
         '''
-        self.logger.info(f"Loading data from {file_list}")
+        if file_list is None:
+            file_list = self.file_list.keys()
+            self.logger.info(f"Loading data from config file_list")
+        else:
+            self.logger.info(f"Loading data from parameter")
         
-        # Extract features from each file using the Extraction class
-        samples = [Extraction(f) for f in file_list]
-        
-        # Convert extracted features into a vectorized form
-        vectorized_samples = np.vstack([Vectorize(s, self.top_features_path) for s in samples])
-        
-        # Generate labels based on file path (if the filename contains "malware", label it as 1, else 0)
-        labels = [1 if "malware" in f else 0 for f in file_list]  
+        samples = self.extractFeature()
+        vectorized_samples = np.vstack([self.vectorize(s) for s in samples])
+        labels = [1 if label == "benignware" else 0 for label in self.file_list.values()]
         
         return vectorized_samples, np.array(labels)
     
-    def train(self, file_list, output_model_path=None):
+    def model(self, training=True):
         '''
-        Trains the XGBoost model using the provided dataset.
+        Trains or loads the XGBoost model.
         
         Parameters:
-        - file_list: List of file paths to be used for training
-        - output_model_path: Path to save the trained model (optional)
+        training (bool): Whether to train the model (default: True) (False: Load or save model)
+
+        Returns:
+        None
         '''
-        self.logger.info(f"Training XGBoost model with {file_list}")
+        if self.config.path.input_model:
+            self.logger.info(f"Loading model from {self.config.path.input_model}")
+            self.load_model(self.config.path.input_model)
         
-        # Load and prepare training data
-        X, y = self.load_data(file_list)
-        
-        # Split data into training and testing sets
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=self.test_size, random_state=self.random_state)
-        
-        # Train the XGBoost classifier
-        self.model.fit(X_train, y_train)
-        
-        # Make predictions on the test set
-        y_pred = self.model.predict(X_test)
-        
-        # Evaluate model performance using precision, recall, and accuracy
-        precision = precision_score(y_test, y_pred)
-        recall = recall_score(y_test, y_pred)
-        accuracy = accuracy_score(y_test, y_pred)
-        
-        # Log evaluation metrics
-        self.logger.info(f"Precision: {precision:.2f}")
-        self.logger.info(f"Recall: {recall:.2f}")
-        self.logger.info(f"Accuracy: {accuracy:.2f}")
-        
-        # Save the model if an output path is provided
-        if output_model_path is not None:
-            self.save_model(output_model_path)
+        if training:
+            self.logger.info(f"Training XGBoost model")
+            X, y = self.load_data()
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=self.config.model.test_size, random_state=self.config.model.random_state)
+            
+            self.xgboost.fit(X_train, y_train)
+            
+            y_pred = self.xgboost.predict(X_test)
+            
+            precision = precision_score(y_test, y_pred)
+            recall = recall_score(y_test, y_pred)
+            accuracy = accuracy_score(y_test, y_pred)
+            
+            self.logger.info(f"Precision: {precision:.2f}")
+            self.logger.info(f"Recall: {recall:.2f}")
+            self.logger.info(f"Accuracy: {accuracy:.2f}")
+            
+        if self.config.path.output_model:
+            self.save_model(self.config.path.output_model)
     
-    def predict(self, file_list):
+    def predict(self):
         '''
         Predicts whether the given files are malware or benignware.
         
-        Parameters:
-        - file_list: List of file paths to classify
-        
         Returns:
-        - results: A list of dictionaries with file names and their predicted labels
+        list: A list of dictionaries containing the file name and detection result.
         '''
-        self.logger.info(f"Predicting for files: {file_list}")
+        self.logger.info(f"Predicting")
         results = []
         
-        for filename in file_list:
+        for filename in self.file_list.keys():
             self.logger.info(f"Processing {filename}")
-            
-            # Extract features from the file
-            sequence = Extraction(filename)
-            
-            # Convert features into vectorized format
-            X_sample = Vectorize(sequence, self.top_features_path)
-            
-            # Make a prediction using the trained model
-            prediction = self.model.predict(X_sample)
-            
-            # Convert numerical prediction to human-readable label
-            label = "malware" if prediction[0] == 1 else "benignware"
-            
-            # Store the result
+            sequence = self.extractFeature(filename)
+            X_sample = self.vectorize(sequence)
+            prediction = self.xgboost.predict(X_sample)
+            label = "benignware" if prediction[0] == 1 else "malware"
             results.append({"name": filename, "detection": label})
+            
+        if self.config.path.output_predict_file:
+            self.logger.info(f"Saving results to {self.config.path.output_predict_file}")
+            with open(self.config.path.output_predict_file, mode='w') as file:
+                json.dump(results, file)
         
         return results
     
     def save_model(self, output_model_path):
         '''
         Saves the trained XGBoost model to a file.
-        
-        Parameters:
-        - output_model_path: Path to save the model
         '''
         self.logger.info(f"Saving model to {output_model_path}")
-        jb.dump(self.model, output_model_path)
+        jb.dump(self.xgboost, output_model_path)
     
     def load_model(self, input_model_path):
         '''
         Loads a pre-trained XGBoost model from a file.
-        
-        Parameters:
-        - input_model_path: Path to the saved model file
         '''
         self.logger.info(f"Loading model from {input_model_path}")
-        self.model = jb.load(input_model_path)
+        self.xgboost = jb.load(input_model_path)
         
 if __name__ == "__main__":
-    # Define the path to the top features file
-    top_features_path = "./src/code/top_features_1.npy"
-    
-    # List of files to process (both malware and benignware)
-    file_list = [
-        "OLD/TestingBin/malware/00a0e4105fbecdb5aa33e7cad7edfaecb2e983e0829e0b30eabe384889f107d4", 
-        "OLD/TestingBin/malware/00a2bd396600e892da75c686be60d5d13e5a34824afd76c02e8cf7257d2cf5c5", 
-        "OLD/TestingBin/benignware/2b0f5e9c8b80c32e42cb4f9924ccd379a9380b88acb6ec6a4bb5ac4d3e952938"
-    ]
-    
-    # Define the path to save or load the trained model
-    model_path = './xgboost_model.pkl'
-    
-    # Create an instance of the XGBoostDetector class
-    detector = XGBoost(top_features_path=top_features_path)
-    
-    # Load a pre-trained model if available
-    detector.load_model(model_path)
-    
-    # Train the model with the provided dataset
-    detector.train(file_list)
-    
-    # Save the trained model to the specified path
-    detector.save_model(model_path)
-    
-    # Run predictions on the provided file list and print results
-    print(detector.predict(file_list))
+    config_path = "./src/config/config_XGBoost.json"
+    model = XGBoost(config_path)
+    model.model(training=True)
+    model.predict()
