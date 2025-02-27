@@ -1,9 +1,6 @@
-import sys
 import json
 import argparse
 
-# from SVM import SVM
-# from XGBoost import XGBoost
 from MalwareDetector import MalwareDetector
 
 def main(args):
@@ -14,13 +11,6 @@ def main(args):
         config = config["config"]
         
     model = MalwareDetector(args.config_path)
-        
-    # if config["model"]["model_name"] == "SVM":
-    #     model = SVM(args.config_path)
-    # elif config["model"]["model_name"] == "XGBoost":
-    #     model = XGBoost(args.config_path)
-    # else:
-    #     raise ValueError(f"Invalid model name: {config['model']['model_name']}")
     
     if config["train"]:
         model.model(training=True)
