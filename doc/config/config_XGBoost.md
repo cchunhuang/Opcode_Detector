@@ -1,6 +1,6 @@
-# config_SVM.json
+# config_XGBoost.json
 
-`config_SVM.json` is a configuration file for setting up the SVM (Support Vector Machine) malware detection model. This file includes settings for model training, prediction, and related paths and parameters.
+`config_XGBoost.json` is a configuration file for setting up the XGBoost malware detection model. This file includes settings for model training, prediction, and related paths and parameters.
 
 ## Configuration Structure
 
@@ -12,7 +12,7 @@
             "train_result": "./output/model/score.json",
             "predict_result": "./output/predict/predict_result.json",
             "input_model": "",
-            "output_model": "./output/model/SVM.pkl",
+            "output_model": "./output/model/XGBoost.pkl",
             "top_features": "./src/resource/top_features_1.npy",
             "logging_config": "./src/config/logging_config.json",
             "log_file": "./output/log/logging.log"
@@ -24,11 +24,14 @@
             "log": "./output/log"
         },
         "model": {
-            "model_name": "SVM",
-            "kernel_type": "linear",
-            "probability": true,
-            "test_size": 0.3,
-            "random_state": 42
+            "model_name": "XGBoost",
+            "n_estimators": 100,
+            "max_depth": 6,
+            "learning_rate": 0.1,
+            "eval_metric": "logloss",
+            "use_label_encoder": false,
+            "random_state": 42,
+            "test_size": 0.3
         },
         "classify": false,
         "train": true,
@@ -50,7 +53,7 @@
 ## Configuration Description
 
 ### `config`
-- Allows inputting only the content of `config`, such as:
+- Allows inputting only the `config` content, for example:
 ```json
 {
     "path": {
@@ -58,7 +61,7 @@
         "train_result": "./output/model/score.json",
         "predict_result": "./output/predict/predict_result.json",
         "input_model": "",
-        "output_model": "./output/model/SVM.pkl",
+        "output_model": "./output/model/XGBoost.pkl",
         "top_features": "./src/resource/top_features_1.npy",
         "logging_config": "./src/config/logging_config.json",
         "log_file": "./output/log/logging.log"
@@ -70,11 +73,14 @@
         "log": "./output/log"
     },
     "model": {
-        "model_name": "SVM",
-        "kernel_type": "linear",
-        "probability": true,
-        "test_size": 0.3,
-        "random_state": 42
+        "model_name": "XGBoost",
+        "n_estimators": 100,
+        "max_depth": 6,
+        "learning_rate": 0.1,
+        "eval_metric": "logloss",
+        "use_label_encoder": false,
+        "random_state": 42,
+        "test_size": 0.3
     },
     "classify": false,
     "train": true,
@@ -84,29 +90,32 @@
 
 ### `config.path`
 
-- `input_file`: Path to the input file, default is `null`, only enabled when `config` is input separately.
-- `train_result`: Path to the output file for training results.
-- `predict_result`: Path to the output file for prediction results.
+- `input_file`: Path to the input file, default is `null`, enabled only when inputting `config` separately.
+- `train_result`: Path to the training result output file.
+- `predict_result`: Path to the prediction result output file.
 - `input_model`: Path to the pre-trained model.
-- `output_model`: Path to the output file for the trained model.
+- `output_model`: Path to the trained model output file.
 - `top_features`: Path to the features file, should point to `top_features_1.npy`.
 - `logging_config`: Path to the logging configuration file, should point to `logging_config.json`.
-- `log_file`: Path to the output log file.
+- `log_file`: Path to the log output file.
 
 ### `config.folder`
 
 - `output`: Path to the output folder.
 - `model`: Path to the model folder.
-- `predict`: Path to the prediction results folder.
+- `predict`: Path to the prediction result folder.
 - `log`: Path to the log folder.
 
 ### `config.model`
 
-- `model_name`: Name of the model, should be `SVM`.
-- `kernel_type`: Type of SVM kernel function, default is `linear`.
-- `probability`: Whether to enable probability estimation, default is `true`.
-- `test_size`: Proportion of the test set, default is `0.3`.
+- `model_name`: Model name, should be `XGBoost`.
+- `n_estimators`: Number of trees, default is `100`.
+- `max_depth`: Maximum depth of the trees, default is `6`.
+- `learning_rate`: Learning rate, default is `0.1`.
+- `eval_metric`: Evaluation metric, default is `logloss`.
+- `use_label_encoder`: Whether to use label encoder, default is `false`.
 - `random_state`: Random seed, default is `42`.
+- `test_size`: Test set proportion, default is `0.3`.
 
 ### `config.classify`
 
@@ -127,10 +136,11 @@
 
 ## Usage
 
-1. Edit the `config_SVM.json` file and modify the configuration as needed.
+1. Edit the `config_XGBoost.json` file and modify the configuration as needed.
 2. Run `main.py` for model training or prediction.
+
 ```sh
-python src/code/main.py src/config/config_SVM.py
+python src/code/main.py src/config/config_XGBoost.py
 ```
 
 ## Notes
