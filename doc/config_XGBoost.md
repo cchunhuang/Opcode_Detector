@@ -39,12 +39,19 @@
     },
     "label": [
         {
-            "filename": "./dataset/test_file_1",
-            "label": "malware"
+            "filename": "./dataset/file_1",
+            "label": "malware",
+            "tags": "train"
         },
         {
-            "filename": "./dataset/test_file_2",
-            "label": "benignware"
+            "filename": "./dataset/file_2",
+            "label": "benignware",
+            "tags": "test"
+        },
+        {
+            "filename": "./dataset/file_3",
+            "label": "malware",
+            "tags": "predict"
         }
     ]
 }
@@ -133,6 +140,7 @@
 
 - `filename`: Path to the labeled file.
 - `label`: Label of the file, `malware` or `benignware`.
+- `tags`: Type of the file tag, `train`, `test`, or `predict`
 
 ## Usage
 
