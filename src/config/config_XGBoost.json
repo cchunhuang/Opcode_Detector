@@ -2,9 +2,9 @@
     "config": {
         "path": {
             "input_file": null,
-            "output_train_file": "./output/model/score.json",
-            "output_predict_file": "./output/predict/predict_result.json",
-            "input_model": "./output/model/XGBoost.pkl",
+            "train_result": "./output/model/score.json",
+            "predict_result": "./output/predict/predict_result.json",
+            "input_model": "",
             "output_model": "./output/model/XGBoost.pkl",
             "top_features": "./src/resource/top_features_1.npy",
             "logging_config": "./src/config/logging_config.json",
