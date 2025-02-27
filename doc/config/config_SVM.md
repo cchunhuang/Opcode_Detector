@@ -1,15 +1,16 @@
 # config_SVM.json
 
-`config_SVM.json` 是用於配置 SVM (Support Vector Machine) 惡意軟體檢測模型的設定檔。此檔案包含了模型訓練、預測以及相關路徑和參數的設定。
+`config_SVM.json` is a configuration file for setting up the SVM (Support Vector Machine) malware detection model. This file includes settings for model training, prediction, and related paths and parameters.
 
-## 配置結構
+## Configuration Structure
 
 ```json
 {
     "config": {
         "path": {
             "input_file": null,
-            "output_file": "./output/predict/predict_result.json",
+            "train_result": "./output/model/score.json",
+            "predict_result": "./output/predict/predict_result.json",
             "input_model": "",
             "output_model": "./output/model/SVM.pkl",
             "top_features": "./src/resource/top_features_1.npy",
@@ -50,15 +51,16 @@
 }
 ```
 
-## 配置說明
+## Configuration Description
 
 ### `config`
-- 允許只輸入 config 的內容，如：
+- Allows inputting only the content of `config`, such as:
 ```json
 {
     "path": {
         "input_file": "./input_file.csv",
-        "output_file": "./output/predict/predict_result.json",
+        "train_result": "./output/model/score.json",
+        "predict_result": "./output/predict/predict_result.json",
         "input_model": "",
         "output_model": "./output/model/SVM.pkl",
         "top_features": "./src/resource/top_features_1.npy",
@@ -86,61 +88,62 @@
 
 ### `config.path`
 
-- `input_file`: 包含輸入文件路徑的檔案，預設為 `null`，只有單獨輸入 `config` 時才會啟用。
-- `output_file`: 預測結果的輸出文件路徑。
-- `input_model`: 預訓練模型的輸入路徑。
-- `output_model`: 訓練後模型的輸出路徑。
-- `top_features`: 特徵文件的路徑，需指向 top_features_1.npy。
-- `logging_config`: 日誌配置文件的路徑，需指向 logging_config.json。
-- `log_file`: 日誌文件的輸出路徑。
+- `input_file`: Path to the input file, default is `null`, only enabled when `config` is input separately.
+- `train_result`: Path to the output file for training results.
+- `predict_result`: Path to the output file for prediction results.
+- `input_model`: Path to the pre-trained model.
+- `output_model`: Path to the output file for the trained model.
+- `top_features`: Path to the features file, should point to `top_features_1.npy`.
+- `logging_config`: Path to the logging configuration file, should point to `logging_config.json`.
+- `log_file`: Path to the output log file.
 
 ### `config.folder`
 
-- `output`: 輸出文件夾的路徑。
-- `model`: 模型文件夾的路徑。
-- `predict`: 預測結果文件夾的路徑。
-- `log`: 日誌文件夾的路徑。
+- `output`: Path to the output folder.
+- `model`: Path to the model folder.
+- `predict`: Path to the prediction results folder.
+- `log`: Path to the log folder.
 
 ### `config.model`
 
-- `model_name`: 模型名稱，需為 `SVM`。
-- `kernel_type`: SVM 核函數類型，預設為 `linear`。
-- `probability`: 是否啟用概率估計，預設為 `true`。
-- `test_size`: 測試集所佔比例，預設為 `0.3`。
-- `random_state`: 隨機種子，預設為 `42`。
+- `model_name`: Name of the model, should be `SVM`.
+- `kernel_type`: Type of SVM kernel function, default is `linear`.
+- `probability`: Whether to enable probability estimation, default is `true`.
+- `test_size`: Proportion of the test set, default is `0.3`.
+- `random_state`: Random seed, default is `42`.
 
 ### `config.classify`
 
-- `classify`: 是否進行分類，目前只有 `false`。
+- `classify`: Whether to perform classification, currently only `false`.
 
 ### `config.train`
 
-- `train`: 是否進行訓練。
+- `train`: Whether to perform training.
 
 ### `config.predict`
 
-- `predict`: 是否進行預測。
+- `predict`: Whether to perform prediction.
 
 ### `label`
 
-- `filename`: 標註文件的路徑。
-- `label`: 文件的標籤，`malware` 或 `benignware`。
+- `filename`: Path to the labeled file.
+- `label`: Label of the file, `malware` or `benignware`.
 
-## 使用方法
+## Usage
 
-1. 編輯 config_SVM.json 文件，根據需要修改配置。
-2. 執行 SVM.py 進行模型訓練或預測。
+1. Edit the `config_SVM.json` file and modify the configuration as needed.
+2. Run `SVM.py` for model training or prediction.
 
 ```sh
 python src/code/SVM.py
 ```
 
-3. 或執行 main.py
+3. Or run `main.py`
 ```sh
 python src/code/main.py src/config/config_SVM.py
 ```
 
-## 注意事項
+## Notes
 
-- 確保所有路徑和文件夾存在，並且具有適當的讀寫權限。
-- 根據需要調整模型參數以獲得最佳效果。
+- Ensure all paths and folders exist and have appropriate read/write permissions.
+- Adjust model parameters as needed to achieve the best results.
