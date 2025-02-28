@@ -42,53 +42,13 @@ pip install -r requirements.txt
   ```
 
 ## Usage
-### 1. Training a Model
-#### SVM Model:
+For details on configuring the project, please refer to the provided documentation within the project.
+### SVM Model:
 ```sh
 python main.py config_SVM.json
 ```
-#### XGBoost Model:
+### XGBoost Model:
 ```sh
 python main.py config_XGBoost.json
 ```
-
-### 2. Predicting Malware
-After training, run:
-```sh
-python main.py config_SVM.json
-```
-or
-```sh
-python main.py config_XGBoost.json
-```
-Results will be saved in `output/predict/predict_result.json`.
-
-## Configuration
-The models use JSON-based configuration files:
-- **SVM:** `config_SVM.json`
-- **XGBoost:** `config_XGBoost.json`
-
-### Example Configuration
-```json
-{
-    "config": {
-        "model": {"model_name": "SVM", "kernel_type": "linear", "probability": true},
-        "train": true,
-        "predict": true
-    },
-    "label": [
-        {"filename": "./dataset/file_1", "label": "malware", "tags": "train"},
-        {"filename": "./dataset/file_2", "label": "benignware", "tags": "test"}
-    ]
-}
-```
-
-## Logging
-Logs are stored in `output/log/logging.log` and are configurable through `logging_config.json`.
-
-## Authors
-- **Your Name**
-
-## License
-This project is licensed under the MIT License.
 
