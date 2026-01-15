@@ -1,0 +1,35 @@
+{
+    "file": {
+        "label": "./dataset/label.csv",
+        "top_features": "./src/top_features_1.npy",
+        "input_model": "",
+        "output_model": "./output_SVM/model/SVM.pkl",
+        "train_result": "./output_SVM/model/score.json",
+        "predict_result": "./output_SVM/predict/predict_result.json"
+    },
+    "folder": {
+        "log": "./output_SVM/log/",
+        "dataset": "./dataset/",
+        "feature": "./output_SVM/feature/",
+        "vector": "./output_SVM/vector/",
+        "model": "./output_SVM/model/",
+        "predict": "./output_SVM/predict/"
+    },
+    "params": {
+        "mode": "detection",
+        "feature": {
+        },
+        "vector": {
+        },
+        "model": {
+            "model_name": "SVM",
+            "kernel_type": "linear",
+            "probability": true,
+            "test_size": 0.3,
+            "random_state": 42
+        },
+        "predict": {
+        }
+    },
+    "action": "train"
+}

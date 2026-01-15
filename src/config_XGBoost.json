@@ -1,0 +1,38 @@
+{
+    "file": {
+        "label": "./dataset/label.csv",
+        "top_features": "./src/top_features_1.npy",
+        "input_model": "",
+        "output_model": "./output_XGBoost/model/XGBoost.pkl",
+        "train_result": "./output_XGBoost/model/score.json",
+        "predict_result": "./output_XGBoost/predict/predict_result.json"
+    },
+    "folder": {
+        "log": "./output_XGBoost/log/",
+        "dataset": "./dataset/",
+        "feature": "./output_XGBoost/feature/",
+        "vector": "./output_XGBoost/vector/",
+        "model": "./output_XGBoost/model/",
+        "predict": "./output_XGBoost/predict/"
+    },
+    "params": {
+        "mode": "detection",
+        "feature": {
+        },
+        "vector": {
+        },
+        "model": {
+            "model_name": "XGBoost",
+            "n_estimators": 100,
+            "max_depth": 6,
+            "learning_rate": 0.1,
+            "eval_metric": "logloss",
+            "use_label_encoder": false,
+            "random_state": 42,
+            "test_size": 0.3
+        },
+        "predict": {
+        }
+    },
+    "action": "train"
+}

@@ -6,19 +6,20 @@ from MalwareDetector import MalwareDetector
 def main(args):
     with open(args.config_path) as f:
         config = json.load(f)
-    
-    if "config" in config:
-        config = config["config"]
         
     model = MalwareDetector(args.config_path)
     
-    if config["train"]:
-        model.model(training=True)
-    if config["predict"]:
-        model.model(training=False)
-        model.predict()
-    if not config["train"] and not config["predict"]:
-        raise ValueError("Invalid operation: Must specify either 'train' or 'predict'")
+    action = config.get("action", "train")
+    
+    if action == "train":
+        model.get_model(action="train")
+        model.get_model(action="predict")
+        model.get_prediction()
+    elif action == "predict":
+        model.get_model(action="predict")
+        model.get_prediction()
+    else:
+        raise ValueError(f"Invalid action: {action}. Must be 'train' or 'predict'")
     
 def parameter_parser():
     parser = argparse.ArgumentParser(description="Malware Detection")
