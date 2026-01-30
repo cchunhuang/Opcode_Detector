@@ -1,6 +1,6 @@
 {
     "file": {
-        "label": "./dataset/label.csv",
+        "label": "./dataset/dataset202312/platform_dataset_less.csv",
         "top_features": "./src/top_features_1.npy",
         "input_model": "",
         "output_model": "./output_XGBoost/model/XGBoost.pkl",
@@ -9,13 +9,14 @@
     },
     "folder": {
         "log": "./output_XGBoost/log/",
-        "dataset": "./dataset/",
+        "dataset": "./dataset/dataset202312/data/",
         "feature": "./output_XGBoost/feature/",
         "vector": "./output_XGBoost/vector/",
         "model": "./output_XGBoost/model/",
         "predict": "./output_XGBoost/predict/"
     },
     "params": {
+        "n_jobs": -1,
         "mode": "detection",
         "feature": {
         },
