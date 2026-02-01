@@ -1,0 +1,14 @@
+key: opcode_detector_svm
+name: Opcode Detector SVM
+version: "1.0.0"
+tasks: [train, predict]
+inputs:
+    dataset: directory  
+outputs:
+    model: file
+    metrics: json
+    predictions: csv
+paramsDefault:
+    probability: true
+    test_size: 0.3
+    random_state: 42
