@@ -27,6 +27,7 @@ Opcode_Detector/
 │   ├── log/                        # Training logs
 │   ├── model/                      # Saved models and training results
 │   └── predict/                    # Prediction results
+├── platform/                       # Platform-specific adaptations (not covered in this guide)
 ├── requirements.txt
 └── Readme.md
 ```
@@ -130,16 +131,16 @@ Specifies output directories for different components:
 ##### General Parameters
 ```json
 "params": {
-    "n_jobs": -1,
+    "n_jobs": -2,
     "mode": "detection",
     ...
 }
 ```
 
 - `n_jobs` (integer): Number of parallel processes for feature extraction
-  - `-1`: Use all available CPUs (recommended)
-  - `1`: Sequential processing (useful for debugging)
-  - `n > 1`: Use n parallel processes
+  - `-1`, `-2`, ... : `-1` leaves one core free, `-2` leaves two core free, ...etc.
+  - `0`, `1`: Sequential processing (useful for debugging)
+  - `n > 1`: Use `n` parallel processes
 - `mode` (string): Operation mode, currently only `"detection"` is supported
 
 ##### Model Parameters for SVM (`params.model`)
@@ -285,11 +286,10 @@ Example: `output_SVM/predict/predict_result.json`
 
 ## Performance Tips
 
-1. **Parallel Processing:** Use `"n_jobs": -1` to utilize all CPU cores for faster feature extraction
-2. **Model Selection:** 
+1. **Model Selection:** 
    - SVM with linear kernel is fast and works well for high-dimensional sparse features
    - XGBoost may provide better accuracy but requires more training time
-3. **Feature Engineering:** The `top_features_1.npy` file contains pre-selected important n-gram features. You can generate your own feature set for different datasets.
+2. **Feature Engineering:** The `top_features_1.npy` file contains pre-selected important n-gram features. You can generate your own feature set for different datasets.
 
 ## References
 
